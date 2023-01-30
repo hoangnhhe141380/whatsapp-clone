@@ -1,10 +1,10 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { useSignInWithGoogle } from 'react-firebase-hooks/auth'
-import { Button } from '@mui/material'
-import styled from 'styled-components'
-import WhatsAppLogo from '../assets/whatsapplogo.png'
-import { auth } from '@/config/firebase'
+import Head from "next/head"
+import Image from "next/image"
+import { useSignInWithGoogle } from "react-firebase-hooks/auth"
+import { Button } from "@mui/material"
+import styled from "styled-components"
+import WhatsAppLogo from "../assets/whatsapplogo.png"
+import { auth } from "@/config/firebase"
 
 const StyledContainer = styled.div`
   height: 100vh;
@@ -14,7 +14,7 @@ const StyledContainer = styled.div`
 `
 
 const StyledLoginContainer = styled.div`
-  display:flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
   padding: 100px;
@@ -30,7 +30,9 @@ const StyledImageWrapper = styled.div`
 const Login = () => {
   const [signInWithGoogle, _user, _loading, _error] = useSignInWithGoogle(auth)
 
-  const signIn = () => { signInWithGoogle() }
+  const signIn = () => {
+    signInWithGoogle()
+  }
 
   return (
     <StyledContainer>
@@ -42,9 +44,16 @@ const Login = () => {
       </Head>
       <StyledLoginContainer>
         <StyledImageWrapper>
-          <Image src={WhatsAppLogo} alt='Whatsapp Logo' height={200} width={200} />
+          <Image
+            src={WhatsAppLogo}
+            alt="Whatsapp Logo"
+            height={200}
+            width={200}
+          />
         </StyledImageWrapper>
-        <Button variant='outlined' onClick={signIn}>Sign in with Google </Button>
+        <Button variant="outlined" onClick={signIn}>
+          Sign in with Google{" "}
+        </Button>
       </StyledLoginContainer>
     </StyledContainer>
   )

@@ -1,24 +1,25 @@
-import { useState } from 'react'
-import { Avatar, IconButton, Tooltip, Button } from '@mui/material'
-import ChatIcon from '@mui/icons-material/Chat'
-import MoreVerticalIcon from '@mui/icons-material/MoreVert'
-import LogoutIcon from '@mui/icons-material/Logout'
-import SearchIcon from '@mui/icons-material/Search'
-import styled from 'styled-components'
-import { signOut } from 'firebase/auth'
-import { auth, db } from '@/config/firebase'
-import Dialog from '@mui/material/Dialog'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import TextField from '@mui/material/TextField'
-import DialogActions from '@mui/material/DialogActions'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import * as EmailValidator from 'email-validator'
-import { addDoc, collection, query, where } from 'firebase/firestore'
-import { useCollection } from 'react-firebase-hooks/firestore'
-import { Conversation } from '@/types'
-import ConversationSelect from './ConversationSelect'
+import { useState } from "react"
+import { Avatar, IconButton, Tooltip, Button } from "@mui/material"
+import ChatIcon from "@mui/icons-material/Chat"
+import MoreVerticalIcon from "@mui/icons-material/MoreVert"
+import LogoutIcon from "@mui/icons-material/Logout"
+import SearchIcon from "@mui/icons-material/Search"
+import styled from "styled-components"
+import { signOut } from "firebase/auth"
+import { auth, db } from "@/config/firebase"
+import Dialog from "@mui/material/Dialog"
+import DialogTitle from "@mui/material/DialogTitle"
+import DialogContent from "@mui/material/DialogContent"
+import DialogContentText from "@mui/material/DialogContentText"
+import TextField from "@mui/material/TextField"
+import DialogActions from "@mui/material/DialogActions"
+import { useAuthState } from "react-firebase-hooks/auth"
+import * as EmailValidator from "email-validator"
+import { addDoc, collection, query, where } from "firebase/firestore"
+import { useCollection } from "react-firebase-hooks/firestore"
+import { Conversation } from "@/types"
+import ConversationSelect from "./ConversationSelect"
+import { useRouter } from "next/router"
 
 const StyledContainer = styled.div`
   height: 100vh;
@@ -31,13 +32,13 @@ const StyledContainer = styled.div`
     display: none;
   }
   /* Hide scrollbar for IE, Edge and Firefox */
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 `
 
 const StyledUserAvatar = styled(Avatar)`
   cursor: pointer;
-  :hover{
+  :hover {
     opacity: 0.8;
   }
 `
@@ -76,14 +77,18 @@ const StyledSidebarButton = styled(Button)`
 `
 
 const Sidebar = () => {
-
-  const [isOpenNewConversationDialog, setIsOpenNewConversationDialog] = useState(false);
+  const [isOpenNewConversationDialog, setIsOpenNewConversationDialog] =
+    useState(false)
   const [loggedInUser, _loading, _error] = useAuthState(auth)
-  const [recipientEmail, setRecipientEmail] = useState('')
+  const [recipientEmail, setRecipientEmail] = useState("")
+
+  const router = useRouter()
+  const currentConversationSelectId = router.query.id
 
   const handleLogout = async () => {
     try {
       await signOut(auth)
+      router.push('/')
     } catch (error) {
       console.log(`Error logout ${error}`)
     }
@@ -92,14 +97,21 @@ const Sidebar = () => {
   const handleToggleNewConversationDialog = (isOpen: boolean) => {
     setIsOpenNewConversationDialog(isOpen)
 
-    if (!isOpen) setRecipientEmail('')
+    if (!isOpen) setRecipientEmail("")
   }
 
-  const queryGetConversationsForCurrentUser = query(collection(db, 'conversations'), where('users', 'array-contains', loggedInUser?.email))
-  const [conversationsSnapshot, __loading, __error] = useCollection(queryGetConversationsForCurrentUser)
+  const queryGetConversationsForCurrentUser = query(
+    collection(db, "conversations"),
+    where("users", "array-contains", loggedInUser?.email)
+  )
+  const [conversationsSnapshot, __loading, __error] = useCollection(
+    queryGetConversationsForCurrentUser
+  )
 
   const isConversationAlreadyExists = (recipientEmail: string) => {
-    return conversationsSnapshot?.docs.find(conversation => (conversation.data() as Conversation).users.includes(recipientEmail))
+    return conversationsSnapshot?.docs.find(conversation =>
+      (conversation.data() as Conversation).users.includes(recipientEmail)
+    )
   }
 
   const isSeftInviting = recipientEmail === loggedInUser?.email
@@ -107,9 +119,12 @@ const Sidebar = () => {
   const handleCreateConversation = async () => {
     if (!recipientEmail) return
 
-    if (EmailValidator.validate(recipientEmail) && !isSeftInviting && !isConversationAlreadyExists(recipientEmail)) {
-
-      await addDoc(collection(db, 'conversations'), {
+    if (
+      EmailValidator.validate(recipientEmail) &&
+      !isSeftInviting &&
+      !isConversationAlreadyExists(recipientEmail)
+    ) {
+      await addDoc(collection(db, "conversations"), {
         users: [loggedInUser?.email, recipientEmail]
       })
     }
@@ -120,8 +135,8 @@ const Sidebar = () => {
   return (
     <StyledContainer>
       <StyledHeader>
-        <Tooltip title={loggedInUser?.email as string} placement='right'>
-          <StyledUserAvatar src={loggedInUser?.photoURL || ''} />
+        <Tooltip title={loggedInUser?.email as string} placement="right">
+          <StyledUserAvatar src={loggedInUser?.photoURL || ""} />
         </Tooltip>
         <div>
           <IconButton>
@@ -137,14 +152,18 @@ const Sidebar = () => {
       </StyledHeader>
       <StyledSearch>
         <SearchIcon />
-        <StyledSearchInput placeholder='Search in conversations' />
+        <StyledSearchInput placeholder="Search in conversations" />
       </StyledSearch>
 
-      <Dialog open={isOpenNewConversationDialog} onClose={() => handleToggleNewConversationDialog(false)}>
+      <Dialog
+        open={isOpenNewConversationDialog}
+        onClose={() => handleToggleNewConversationDialog(false)}
+      >
         <DialogTitle>New Conversation</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please enter a google email address for the user you wish to chat with
+            Please enter a google email address for the user you wish to chat
+            with
           </DialogContentText>
           <TextField
             autoFocus
@@ -158,20 +177,35 @@ const Sidebar = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => handleToggleNewConversationDialog(false)}>Cancel</Button>
-          <Button disabled={!recipientEmail} onClick={() => handleCreateConversation()}>Create</Button>
+          <Button onClick={() => handleToggleNewConversationDialog(false)}>
+            Cancel
+          </Button>
+          <Button
+            disabled={!recipientEmail}
+            onClick={() => handleCreateConversation()}
+          >
+            Create
+          </Button>
         </DialogActions>
       </Dialog>
 
-      <StyledSidebarButton onClick={() => handleToggleNewConversationDialog(true)}>Start a new conversation</StyledSidebarButton>
+      <StyledSidebarButton
+        onClick={() => handleToggleNewConversationDialog(true)}
+      >
+        Start a new conversation
+      </StyledSidebarButton>
 
-      {conversationsSnapshot?.docs.map(conversation =>
+      {conversationsSnapshot?.docs.map(conversation => (
         <ConversationSelect
           key={conversation.id}
           id={conversation.id}
+          currentActive={
+            currentConversationSelectId as string | string[] | undefined
+          }
           conversationUsers={(conversation.data() as Conversation).users}
-        />)
-      }
+          newestMessage={(conversation.data() as Conversation).newestMessage}
+        />
+      ))}
     </StyledContainer>
   )
 }

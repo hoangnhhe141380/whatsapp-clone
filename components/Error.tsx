@@ -1,9 +1,8 @@
-import React from 'react'
-import Image from 'next/image'
-import styled from 'styled-components'
-import { CircularProgress, Typography } from '@mui/material'
-import WhatsAppLogo from '../assets/whatsapplogo.png'
-
+import React from "react"
+import Image from "next/image"
+import styled from "styled-components"
+import { CircularProgress, Typography } from "@mui/material"
+import WhatsAppLogo from "../assets/whatsapplogo.png"
 
 const StyledContainer = styled.div`
   display: flex;
@@ -20,12 +19,14 @@ const Error = () => {
   return (
     <StyledContainer>
       <StyledImageWrapper>
-        <Image src={WhatsAppLogo} alt='Whatsapp Logo' height={200} width={200} />
+        <Image
+          src={WhatsAppLogo}
+          alt="Whatsapp Logo"
+          height={200}
+          width={200}
+        />
       </StyledImageWrapper>
-      <Typography variant="h6">
-        Oops! Something went wrong!
-      </Typography>
-
+      <Typography variant="h6">Oops! Something went wrong!</Typography>
     </StyledContainer>
   )
 }

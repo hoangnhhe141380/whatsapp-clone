@@ -2,7 +2,10 @@ import ConversationScreen from "@/components/ConversationScreen"
 import Sidebar from "@/components/Sidebar"
 import { auth, db } from "@/config/firebase"
 import { Conversation, IMessage } from "@/types"
-import { generateQueryGetMessage, transformMessage } from "@/utils/getMessageInConversation"
+import {
+  generateQueryGetMessage,
+  transformMessage
+} from "@/utils/getMessageInConversation"
 import { getRecipientEmail } from "@/utils/getRecipientEmail"
 import { doc, getDoc, getDocs } from "firebase/firestore"
 import { GetServerSideProps } from "next"
@@ -23,8 +26,8 @@ const StyledConversationContainer = styled.div`
     display: none;
   }
   /* Hide scrollbar for IE, Edge and Firefox */
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 `
 
 interface ChatConversationProps {
@@ -32,39 +35,49 @@ interface ChatConversationProps {
   messages: IMessage[]
 }
 
-const ChatConversation = ({ conversation, messages }: ChatConversationProps) => {
+const ChatConversation = ({
+  conversation,
+  messages
+}: ChatConversationProps) => {
   const [loggedInUser, _loading, _user] = useAuthState(auth)
 
   return (
     <StyledContainer>
       <Head>
-        <title>Conversation with {getRecipientEmail(conversation.users, loggedInUser)}</title>
+        <title>
+          Conversation with
+          {getRecipientEmail(conversation.users, loggedInUser)}
+        </title>
       </Head>
       <Sidebar />
 
       <StyledConversationContainer>
         <ConversationScreen conversation={conversation} messages={messages} />
       </StyledConversationContainer>
-
     </StyledContainer>
   )
 }
 
 export default ChatConversation
 
-export const getServerSideProps: GetServerSideProps<ChatConversationProps, { id: string }> = async context => {
+export const getServerSideProps: GetServerSideProps<
+  ChatConversationProps,
+  { id: string }
+> = async context => {
   const conversationId = context.params?.id
 
-  // Get conversations to know who we chatting with
-  const conversationRef = doc(db, 'conversations', conversationId as string)
+  // get conversation, to know who we are chatting with
+  const conversationRef = doc(db, "conversations", conversationId as string)
   const conversationSnapshot = await getDoc(conversationRef)
 
-  // Get all message between logged user and recipient in this conversation
+  // get all messages between logged in user and recipient in this conversation
   const queryMessages = generateQueryGetMessage(conversationId)
 
   const messagesSnapshot = await getDocs(queryMessages)
 
-  const messages = messagesSnapshot.docs.map(messageDoc => transformMessage(messageDoc))
+  const messages = messagesSnapshot.docs.map(messageDoc =>
+    transformMessage(messageDoc)
+  )
 
   return {
     props: {
@@ -72,5 +85,4 @@ export const getServerSideProps: GetServerSideProps<ChatConversationProps, { id:
       messages
     }
   }
-
 }

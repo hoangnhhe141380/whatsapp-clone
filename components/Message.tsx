@@ -1,8 +1,8 @@
-import { auth } from '@/config/firebase'
-import { IMessage } from '@/types'
-import React from 'react'
-import { useAuthState } from 'react-firebase-hooks/auth'
-import styled from 'styled-components'
+import { auth } from "@/config/firebase"
+import { IMessage } from "@/types"
+import React from "react"
+import { useAuthState } from "react-firebase-hooks/auth"
+import styled from "styled-components"
 
 const StyledMessage = styled.p`
   width: fit-content;
@@ -13,6 +13,7 @@ const StyledMessage = styled.p`
   border-radius: 8px;
   margin: 10px;
   position: relative;
+  border: 1px solid lightgray;
 `
 
 const StyledSenderMessage = styled(StyledMessage)`
@@ -36,14 +37,15 @@ const StyledTimestamp = styled.span`
 
 const Message = ({ message }: { message: IMessage }) => {
   const [loggedInUser, _loading, _error] = useAuthState(auth)
-  const MessageType = loggedInUser?.email === message.user ? StyledSenderMessage : StyledReceiverMessage
+  const MessageType =
+    loggedInUser?.email === message.user
+      ? StyledSenderMessage
+      : StyledReceiverMessage
 
   return (
     <MessageType>
       {message.text}
-      <StyledTimestamp>
-        {message.sent_at}
-      </StyledTimestamp>
+      <StyledTimestamp>{message.sent_at}</StyledTimestamp>
     </MessageType>
   )
 }

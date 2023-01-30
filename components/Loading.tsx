@@ -1,9 +1,8 @@
-import React from 'react'
-import Image from 'next/image'
-import styled from 'styled-components'
-import { CircularProgress } from '@mui/material'
-import WhatsAppLogo from '../assets/whatsapplogo.png'
-
+import React from "react"
+import Image from "next/image"
+import styled from "styled-components"
+import { CircularProgress } from "@mui/material"
+import WhatsAppLogo from "../assets/whatsapplogo.png"
 
 const StyledContainer = styled.div`
   display: flex;
@@ -20,7 +19,12 @@ const Loading = () => {
   return (
     <StyledContainer>
       <StyledImageWrapper>
-        <Image src={WhatsAppLogo} alt='Whatsapp Logo' height={200} width={200} />
+        <Image
+          src={WhatsAppLogo}
+          alt="Whatsapp Logo"
+          height={200}
+          width={200}
+        />
       </StyledImageWrapper>
       <CircularProgress />
     </StyledContainer>
