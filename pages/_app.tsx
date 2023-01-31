@@ -8,6 +8,8 @@ import Loading from "@/components/Loading"
 import Error from "@/components/Error"
 import Login from "./login"
 import { doc, serverTimestamp, setDoc } from "firebase/firestore"
+import { createGlobalStyle } from 'styled-components';
+
 
 export default function App({ Component, pageProps }: AppProps) {
   const [loggedInUser, loading, error] = useAuthState(auth)
@@ -41,5 +43,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
   if (!loggedInUser) return <Login />
 
-  return <Component {...pageProps} />
+  return (
+    <Component {...pageProps} />
+  )
 }

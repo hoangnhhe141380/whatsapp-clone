@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Avatar, IconButton, Tooltip, Button } from "@mui/material"
+import { Avatar, IconButton, Tooltip, Button, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material"
 import ChatIcon from "@mui/icons-material/Chat"
 import MoreVerticalIcon from "@mui/icons-material/MoreVert"
 import LogoutIcon from "@mui/icons-material/Logout"
@@ -20,6 +20,7 @@ import { useCollection } from "react-firebase-hooks/firestore"
 import { Conversation } from "@/types"
 import ConversationSelect from "./ConversationSelect"
 import { useRouter } from "next/router"
+import { PersonAdd, Settings, Logout, SettingsAccessibility, QuestionAnswerOutlined, CommentsDisabled, QuestionAnswer, Help } from "@mui/icons-material"
 
 const StyledContainer = styled.div`
   height: 100vh;
@@ -76,6 +77,7 @@ const StyledSidebarButton = styled(Button)`
   font-style: bold;
 `
 
+
 const Sidebar = () => {
   const [isOpenNewConversationDialog, setIsOpenNewConversationDialog] =
     useState(false)
@@ -84,6 +86,15 @@ const Sidebar = () => {
 
   const router = useRouter()
   const currentConversationSelectId = router.query.id
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClickMoreVerts = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = async () => {
     try {
@@ -142,9 +153,79 @@ const Sidebar = () => {
           <IconButton>
             <ChatIcon />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleClickMoreVerts}>
             <MoreVerticalIcon />
           </IconButton>
+
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            onClick={handleClose}
+            PaperProps={{
+              elevation: 0,
+              sx: {
+                overflow: 'visible',
+                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                mt: 1.5,
+                py: 1,
+                '& .MuiAvatar-root': {
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1,
+                },
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'background.paper',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              },
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          >
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <Settings fontSize="small" />
+              </ListItemIcon>
+              Preferences
+            </MenuItem>
+            <Divider />
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <PersonAdd fontSize="small" />
+              </ListItemIcon>
+              Active Contacts
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <QuestionAnswer fontSize="small" />
+              </ListItemIcon>
+              Message requests
+            </MenuItem>
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <CommentsDisabled fontSize="small" />
+              </ListItemIcon>
+              Archived chats
+            </MenuItem>
+            <Divider />
+            <MenuItem onClick={handleClose}>
+              <ListItemIcon>
+                <Help fontSize="small" />
+              </ListItemIcon>
+              Help
+            </MenuItem>
+          </Menu>
+
           <IconButton onClick={handleLogout}>
             <LogoutIcon />
           </IconButton>

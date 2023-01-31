@@ -21,6 +21,7 @@ import MicIcon from "@mui/icons-material/Mic"
 import {
   useState,
   useRef,
+  useEffect,
   KeyboardEventHandler,
   MouseEventHandler
 } from "react"
@@ -31,6 +32,10 @@ import {
   serverTimestamp,
   setDoc
 } from "firebase/firestore"
+import EmojiPicker, {
+  EmojiClickData,
+} from "emoji-picker-react";
+import { Menu } from "@mui/material"
 
 const StyledRecipentHeader = styled.div`
   position: sticky;
@@ -101,6 +106,13 @@ const EndOfMessagesForAutoScroll = styled.div`
   margin-bottom: 30px;
 `
 
+const StyledMenu = styled(Menu)`
+  overflow: 'visible';
+  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))';
+  padding: 0px;
+  top: -60px;
+`
+
 interface ConversationScreenProps {
   conversation: Conversation
   messages: IMessage[]
@@ -110,7 +122,8 @@ const ConversationScreen = ({
   conversation,
   messages
 }: ConversationScreenProps) => {
-  const [newMessage, setNewMessage] = useState("")
+  const [newMessage, setNewMessage] = useState<string>("")
+  const [selectedEmoji, setSelectedEmoji] = useState<string>("");
   const endOfMessagesRef = useRef<HTMLDivElement>(null)
   const [loggedInUser, _loading, _error] = useAuthState(auth)
 
@@ -124,6 +137,11 @@ const ConversationScreen = ({
   const queryGetMessages = generateQueryGetMessage(conversationId as string)
   const [messagesSnapshot, messagesLoading, __error] =
     useCollection(queryGetMessages)
+
+  //Auto scroll to the newest message when component loaded
+  useEffect(() => {
+    scrollToBottom()
+  }, [])
 
   const handleShowMessage = () => {
     // If front-end is loading messsages behind the scenes, display messages from SSR (passed from [id].tsx)
@@ -180,6 +198,9 @@ const ConversationScreen = ({
 
     //And auto scroll
     scrollToBottom()
+
+    //And close emoji picker 
+    handleClose()
   }
 
   const handleSendMessageOnEnter: KeyboardEventHandler<
@@ -203,6 +224,20 @@ const ConversationScreen = ({
   const scrollToBottom = () => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" })
   }
+
+  function handleClickEmoji(emojiData: EmojiClickData, event: MouseEvent) {
+    setSelectedEmoji(emojiData.unified);
+    setNewMessage(prev => `${prev}${emojiData.emoji}`)
+  }
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleShowEmojiPicker = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <>
@@ -238,7 +273,29 @@ const ConversationScreen = ({
       </StyledMessageContainer>
 
       <StyledInputContainer>
-        <InsertEmoticonIcon />
+        <IconButton onClick={handleShowEmojiPicker}>
+          <InsertEmoticonIcon />
+        </IconButton>
+
+        <StyledMenu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            elevation: 0,
+            sx: {
+              pt: 0,
+              pb: 0,
+            }
+          }}
+        >
+          <EmojiPicker
+            onEmojiClick={handleClickEmoji}
+            autoFocusSearch={false}
+            height={400}
+          />
+        </StyledMenu>
+
         <StyledInput
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
