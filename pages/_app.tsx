@@ -1,5 +1,4 @@
 import "@/styles/globals.css"
-import "../styles/reset.css"
 import { useEffect } from "react"
 import type { AppProps } from "next/app"
 import { useAuthState } from "react-firebase-hooks/auth"

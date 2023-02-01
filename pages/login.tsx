@@ -52,7 +52,7 @@ const Login = () => {
           />
         </StyledImageWrapper>
         <Button variant="outlined" onClick={signIn}>
-          Sign in with Google{" "}
+          Sign in with Google
         </Button>
       </StyledLoginContainer>
     </StyledContainer>
