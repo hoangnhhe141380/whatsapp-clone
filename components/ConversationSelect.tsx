@@ -27,8 +27,7 @@ const StyledEmail = styled.span`
   font-weight: bold;
 `
 
-const StyledNewestMessage = styled.span`
-`
+const StyledNewestMessage = styled.span``
 
 const ConversationSelect = ({
   id,
@@ -39,7 +38,7 @@ const ConversationSelect = ({
   id: string
   currentActive: string | string[] | undefined
   conversationUsers: Conversation["users"]
-  newestMessage: Conversation['newestMessage']
+  newestMessage: Conversation["newestMessage"]
 }) => {
   const { recipient, recipientEmail } = useRecipient(conversationUsers)
 
@@ -49,7 +48,11 @@ const ConversationSelect = ({
     router.push(`/conversations/${id}`)
   }
 
-  const newestMes = newestMessage?.text ? newestMessage.user === recipientEmail ? newestMessage.text : `You: ${newestMessage.text}` : ``
+  const newestMes = newestMessage?.text
+    ? newestMessage.user === recipientEmail
+      ? newestMessage.text
+      : `You: ${newestMessage.text}`
+    : ``
 
   return (
     <StyledContainer
@@ -60,7 +63,9 @@ const ConversationSelect = ({
       <RecipientAvatar recipient={recipient} recipientEmail={recipientEmail} />
       <StyledTextContainer>
         <StyledEmail>{recipientEmail}</StyledEmail>
-        <StyledNewestMessage>{`${newestMes}`}</StyledNewestMessage>
+        <StyledNewestMessage>{`${
+          newestMes.length > 20 ? `${newestMes.substring(0, 20)}...` : newestMes
+        }`}</StyledNewestMessage>
       </StyledTextContainer>
     </StyledContainer>
   )

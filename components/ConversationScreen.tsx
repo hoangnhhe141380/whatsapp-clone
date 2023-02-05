@@ -18,12 +18,15 @@ import Message from "./Message"
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon"
 import SendIcon from "@mui/icons-material/Send"
 import MicIcon from "@mui/icons-material/Mic"
+import ImageIcon from "@mui/icons-material/Image"
 import {
   useState,
   useRef,
   useEffect,
   KeyboardEventHandler,
-  MouseEventHandler
+  MouseEventHandler,
+  ChangeEvent,
+  FormEvent
 } from "react"
 import {
   addDoc,
@@ -32,10 +35,10 @@ import {
   serverTimestamp,
   setDoc
 } from "firebase/firestore"
-import EmojiPicker, {
-  EmojiClickData,
-} from "emoji-picker-react";
-import { Menu } from "@mui/material"
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react"
+import { Button, Menu } from "@mui/material"
+import { margin } from "@mui/system"
+import DescriptionAlerts from "./DescriptionAlert"
 
 const StyledRecipentHeader = styled.div`
   position: sticky;
@@ -107,10 +110,14 @@ const EndOfMessagesForAutoScroll = styled.div`
 `
 
 const StyledMenu = styled(Menu)`
-  overflow: 'visible';
-  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))';
+  overflow: "visible";
+  filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))";
   padding: 0px;
   top: -60px;
+`
+
+const StyledInputImage = styled.input`
+  display: none;
 `
 
 interface ConversationScreenProps {
@@ -123,7 +130,7 @@ const ConversationScreen = ({
   messages
 }: ConversationScreenProps) => {
   const [newMessage, setNewMessage] = useState<string>("")
-  const [selectedEmoji, setSelectedEmoji] = useState<string>("");
+  const [selectedEmoji, setSelectedEmoji] = useState<string>("")
   const endOfMessagesRef = useRef<HTMLDivElement>(null)
   const [loggedInUser, _loading, _error] = useAuthState(auth)
 
@@ -178,8 +185,7 @@ const ConversationScreen = ({
         users: [loggedInUser?.email, recipientEmail],
         newestMessage: {
           text: newMessage,
-          user: loggedInUser?.email,
-          // date: serverTimestamp(),
+          user: loggedInUser?.email
         }
       },
       { merge: true }
@@ -199,7 +205,7 @@ const ConversationScreen = ({
     //And auto scroll
     scrollToBottom()
 
-    //And close emoji picker 
+    //And close emoji picker
     handleClose()
   }
 
@@ -225,19 +231,62 @@ const ConversationScreen = ({
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
-  function handleClickEmoji(emojiData: EmojiClickData, event: MouseEvent) {
-    setSelectedEmoji(emojiData.unified);
+  const handleClickEmoji = (emojiData: EmojiClickData, event: MouseEvent) => {
+    setSelectedEmoji(emojiData.unified)
     setNewMessage(prev => `${prev}${emojiData.emoji}`)
   }
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
   const handleShowEmojiPicker = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
+
+  const toBase64 = (file: Blob) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = error => reject(error)
+    })
+
+  const [openAlert, setOpenAlert] = useState(false)
+
+  const handleClickAlert = () => {
+    setOpenAlert(true)
+  }
+
+  const handleCloseAlert = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return
+    }
+
+    setOpenAlert(false)
+  }
+
+  const handleChooseImage = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) {
+      return
+    }
+    const file = e.target.files[0]
+
+    try {
+      const base64Image = await toBase64(file).then(data => data)
+      console.log(base64Image)
+      handleClickAlert()
+      return
+    } catch (error) {
+      console.log(error)
+      handleClickAlert()
+      return
+    }
+  }
 
   return (
     <>
@@ -285,7 +334,7 @@ const ConversationScreen = ({
             elevation: 0,
             sx: {
               pt: 0,
-              pb: 0,
+              pb: 0
             }
           }}
         >
@@ -295,6 +344,23 @@ const ConversationScreen = ({
             height={400}
           />
         </StyledMenu>
+
+        <Button component="label" sx={{ padding: "0rem" }}>
+          <StyledInputImage
+            accept="image/*"
+            id="contained-button-file"
+            type="file"
+            onChange={e => handleChooseImage(e)}
+          />
+          <ImageIcon />
+        </Button>
+
+        <DescriptionAlerts
+          open={openAlert}
+          handleClose={handleCloseAlert}
+          severity="error"
+          message="Upload Image not support yet!"
+        />
 
         <StyledInput
           value={newMessage}

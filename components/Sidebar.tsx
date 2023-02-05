@@ -1,5 +1,14 @@
 import { useState } from "react"
-import { Avatar, IconButton, Tooltip, Button, Divider, ListItemIcon, Menu, MenuItem } from "@mui/material"
+import {
+  Avatar,
+  IconButton,
+  Tooltip,
+  Button,
+  Divider,
+  ListItemIcon,
+  Menu,
+  MenuItem
+} from "@mui/material"
 import ChatIcon from "@mui/icons-material/Chat"
 import MoreVerticalIcon from "@mui/icons-material/MoreVert"
 import LogoutIcon from "@mui/icons-material/Logout"
@@ -20,7 +29,16 @@ import { useCollection } from "react-firebase-hooks/firestore"
 import { Conversation } from "@/types"
 import ConversationSelect from "./ConversationSelect"
 import { useRouter } from "next/router"
-import { PersonAdd, Settings, Logout, SettingsAccessibility, QuestionAnswerOutlined, CommentsDisabled, QuestionAnswer, Help } from "@mui/icons-material"
+import {
+  PersonAdd,
+  Settings,
+  Logout,
+  SettingsAccessibility,
+  QuestionAnswerOutlined,
+  CommentsDisabled,
+  QuestionAnswer,
+  Help
+} from "@mui/icons-material"
 
 const StyledContainer = styled.div`
   height: 100vh;
@@ -77,7 +95,6 @@ const StyledSidebarButton = styled(Button)`
   font-style: bold;
 `
 
-
 const Sidebar = () => {
   const [isOpenNewConversationDialog, setIsOpenNewConversationDialog] =
     useState(false)
@@ -87,19 +104,19 @@ const Sidebar = () => {
   const router = useRouter()
   const currentConversationSelectId = router.query.id
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
   const handleClickMoreVerts = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
+    setAnchorEl(null)
+  }
 
   const handleLogout = async () => {
     try {
       await signOut(auth)
-      router.push('/')
+      router.push("/")
     } catch (error) {
       console.log(`Error logout ${error}`)
     }
@@ -165,32 +182,32 @@ const Sidebar = () => {
             PaperProps={{
               elevation: 0,
               sx: {
-                overflow: 'visible',
-                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                overflow: "visible",
+                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                 mt: 1.5,
                 py: 1,
-                '& .MuiAvatar-root': {
+                "& .MuiAvatar-root": {
                   width: 32,
                   height: 32,
                   ml: -0.5,
-                  mr: 1,
+                  mr: 1
                 },
-                '&:before': {
+                "&:before": {
                   content: '""',
-                  display: 'block',
-                  position: 'absolute',
+                  display: "block",
+                  position: "absolute",
                   top: 0,
                   right: 14,
                   width: 10,
                   height: 10,
-                  bgcolor: 'background.paper',
-                  transform: 'translateY(-50%) rotate(45deg)',
-                  zIndex: 0,
-                },
-              },
+                  bgcolor: "background.paper",
+                  transform: "translateY(-50%) rotate(45deg)",
+                  zIndex: 0
+                }
+              }
             }}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
             <MenuItem onClick={handleClose}>
               <ListItemIcon>

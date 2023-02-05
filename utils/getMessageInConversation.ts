@@ -20,14 +20,14 @@ export const generateQueryGetMessage = (conversationId?: string) =>
 export const transformMessage = (
   message: QueryDocumentSnapshot<DocumentData>
 ) =>
-({
-  // Spread out conversation_id, text, sent_at, user
-  ...message.data(),
-  id: message.id,
-  sent_at: message.data()?.sent_at
-    ? convertFirestoreTimestampToString(message.data().sent_at as Timestamp)
-    : null
-} as IMessage)
+  ({
+    // Spread out conversation_id, text, sent_at, user
+    ...message.data(),
+    id: message.id,
+    sent_at: message.data()?.sent_at
+      ? convertFirestoreTimestampToString(message.data().sent_at as Timestamp)
+      : null
+  } as IMessage)
 
 export const convertFirestoreTimestampToString = (timestamp: Timestamp) => {
   return new Date(timestamp.toDate().getTime()).toLocaleString()
