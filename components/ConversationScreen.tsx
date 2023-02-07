@@ -358,8 +358,8 @@ const ConversationScreen = ({
         <DescriptionAlerts
           open={openAlert}
           handleClose={handleCloseAlert}
-          severity="error"
-          message="Upload Image not support yet!"
+          severity="warning"
+          message="Upload Image not support yet because firestore max size is 1mb :<"
         />
 
         <StyledInput

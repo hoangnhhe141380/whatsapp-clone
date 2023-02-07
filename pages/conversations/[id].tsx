@@ -45,8 +45,7 @@ const ChatConversation = ({
     <StyledContainer>
       <Head>
         <title>
-          Conversation with
-          {getRecipientEmail(conversation.users, loggedInUser)}
+          {`Conversation with ${getRecipientEmail(conversation?.users, loggedInUser)}`}
         </title>
       </Head>
       <Sidebar />
